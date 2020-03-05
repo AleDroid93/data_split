@@ -2,12 +2,11 @@ import numpy as np
 import constants
 from sklearn import model_selection
 from sklearn.utils import shuffle
-from keras.utils import to_categorical
-
-
-
+from tensorflow.keras.utils import to_categorical
 
 classes = np.load(constants.CLASSES_PATH)
+classes -= 1
+n_classes = len(np.unique(classes))
 data = np.load(constants.DATA_PATH)
 segments_id = np.load(constants.SEGMENT_ID_PATH)
 
@@ -17,8 +16,7 @@ assert len(classes) == len(data) == len(segments_id)
 for i in range(constants.N_FOLDS):
     # permutation of data
     perm_data, perm_classes, perm_ids = shuffle(data, classes, segments_id, random_state=0)
-    perm_classes = to_categorical(perm_classes, num_classes=None)
-    files = []
+    perm_classes = to_categorical(perm_classes, num_classes=n_classes)
 
     x_train, x_test_validation, y_train, y_test_validation, id_train, id_test_valid = model_selection.train_test_split(perm_data, perm_classes, perm_ids,
                                                                                               test_size=constants.TRAIN_SIZE,
